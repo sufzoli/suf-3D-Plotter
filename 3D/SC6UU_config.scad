@@ -1,0 +1,15 @@
+sc_W=30;
+sc_W1=28;
+sc_W2=14;
+sc_W3=9;
+sc_L=25;
+sc_T=6;
+sc_L1=8;
+sc_G=15;
+sc_F=18;
+sc_D=4;
+sc_h=9;
+sc_d=6;
+sc_C=15;
+sc_K=5;
+sc_S1=4;

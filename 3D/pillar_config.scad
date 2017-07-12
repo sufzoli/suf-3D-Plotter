@@ -1,0 +1,10 @@
+block_heigth=25;
+hole_dia = 23;
+cut_out = 20;
+bolt_circle_dia = 43.815;
+bolt_dia = 4;
+m_size = 42;
+wall = 4;
+height_clerance = 80;
+rod_dia = 6.3;
+gear_hole_dia=4.5;

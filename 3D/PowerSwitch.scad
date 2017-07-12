@@ -1,0 +1,59 @@
+$fn= 100;
+
+difference()
+{
+    cube([66.5,80.5,20]);
+    translate([2.5,-0.001,2.5])
+        cube([61.5,60.001,17.501]);
+    translate([-0.001,62.5,2.5])
+        cube([66.502,18.001,17.501]);
+    translate([10,20,-0.001])
+        hull()
+        {
+            translate([2,6,0])
+                cylinder(d=4,h=2.502);
+            translate([6,2,0])
+                cylinder(d=4,h=2.502);
+            translate([44.5,2,0])
+                cylinder(d=4,h=2.502);
+            translate([44.5,25,0])
+                cylinder(d=4,h=2.502);
+            translate([6,25,0])
+                cylinder(d=4,h=2.502);
+            translate([2,21,0])
+                cylinder(d=4,h=2.502);
+        }
+    translate([18,47,0])
+        mount_clip();
+    translate([43,47,0])
+        mount_clip();
+    translate([18,20,0])
+        mirror([0,1,0])
+            mount_clip();
+    translate([43,20,0])
+        mirror([0,1,0])
+            mount_clip();
+    translate([13.25,59.999,12])
+        rotate([-90,0,0])
+            cylinder(d=4.5,h=2.502);
+    translate([53.25,59.999,12])
+        rotate([-90,0,0])
+            cylinder(d=4.5,h=2.502);
+}
+
+
+module mount_clip()
+{
+    hull()
+    {
+        translate([0,0,1])
+            rotate([0,90,0])
+                cylinder(d=0.001,h=10);
+        translate([0,0,2.501])
+            rotate([0,90,0])
+                cylinder(d=0.001,h=10);
+        translate([0,3,2.501])
+            rotate([0,90,0])
+                cylinder(d=0.001,h=10);
+    }
+}

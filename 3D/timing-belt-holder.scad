@@ -1,0 +1,46 @@
+$fn=100;
+difference()
+{
+    union()
+    {
+        translate([1.5,1.5,0])
+        {
+            minkowski()
+            {
+                cube([17,17,1]);
+                cylinder(d=3,h=1);
+            }
+        }
+        translate([4,1.5,0])
+        {
+            minkowski()
+            {
+                cube([12,37,1]);
+                cylinder(d=3,h=1);
+            }
+        }
+    }
+    translate([3,3,-0.001])
+        cylinder(d=3.5,h=2.002);
+    translate([17,3,-0.001])
+        cylinder(d=3.5,h=2.002);
+    translate([3,17,-0.001])
+        cylinder(d=3.5,h=2.002);
+    translate([17,17,-0.001])
+        cylinder(d=3.5,h=2.002);
+}
+translate([6.5,0,0])
+    cube([2.5,14.5,12]);
+translate([11,0,0])
+    cube([2.5,14.5,12]);
+translate([6.5,25.5,0])
+    cube([2.5,14.5,12]);
+translate([11,25.5,0])
+    cube([2.5,14.5,12]);
+
+translate([10,17.5,0])
+    cylinder(d=3.5,h=12);
+
+translate([10,22.5,0])
+    cylinder(d=3.5,h=12);
+

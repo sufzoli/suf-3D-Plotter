@@ -1,0 +1,163 @@
+$fn=100;
+
+module console()
+{
+    base_dist = 25;
+    difference()
+    {
+        union()
+        {
+            hull()
+            {
+                rotate([0,90,0])
+                    cylinder(d=0.001,h=190);
+                translate([0,0,82.5])
+                    rotate([0,90,0])
+                        cylinder(d=0.001,h=190);
+                translate([0,-2.5,82.5])
+                    rotate([0,90,0])
+                        cylinder(d=0.001,h=190);
+                translate([0,-2.5-base_dist,0])
+                    rotate([0,90,0])
+                        cylinder(d=0.001,h=190);
+            }
+            cube([2.5,20,60]);
+            translate([187.5,0,0])
+                cube([2.5,20,60]);
+        }
+        hull()
+        {
+            translate([2.5,0.001,-0.001])
+                rotate([0,90,0])
+                    cylinder(d=0.001,h=185);
+            translate([2.5,0.001,82.5])
+                rotate([0,90,0])
+                    cylinder(d=0.001,h=185);
+            translate([2.5,base_dist*-1,-0.001])
+                rotate([0,90,0])
+                    cylinder(d=0.001,h=185);
+        }
+        translate([0,-2.5,82.5])
+            rotate([90-atan(base_dist/82.5),0,0])
+            {
+                translate([5,-19.5,-15.999])
+                    translate([0,-55,0])
+                    {
+                        translate([137,25,13.499])
+                            cylinder(d=16,h=2.502);
+                        translate([137,8,13.499])
+                            cylinder(d=8,h=2.502);
+                        translate([137,44,13.499])
+                            cylinder(d=1.2,h=2.502);
+                        translate([137,46,13.499])
+                            cylinder(d=1.2,h=2.502);
+                        translate([137,42,13.499])
+                            cylinder(d=1.2,h=2.502);
+                        translate([135,44,13.499])
+                            cylinder(d=1.2,h=2.502);
+                        translate([139,44,13.499])
+                            cylinder(d=1.2,h=2.502);
+                        translate([13,0.9,6])
+                            cube([98,40.6,10]);
+                        translate([-5.001,7.5,-2.5])
+                            cube([2.502,28,3]);
+                    }
+
+            }
+    }
+    difference()
+    {
+        translate([0,-0.375,60])
+            cube([190,20.375,2.5]);
+        translate([10,10,59.999])
+            cylinder(d=4.5,h=2.502);
+        translate([180,10,59.999])
+            cylinder(d=4.5,h=2.502);
+    }
+    translate([0,0,62.5])
+        rotate([-atan(base_dist/82.5),0,0])
+            translate([0,-7.63,-2.5])
+                cube([190,8,2.5]);
+
+
+
+    translate([0,-2.5,82.5])
+        rotate([90-atan(base_dist/82.5),0,0])
+        {
+    //        translate([5,-19.5/,-15.999])
+    //            display();
+            translate([5+2.5,-19.5-2.5,-14.5])
+                difference()
+                {
+                    cylinder(d=6,h=12);
+                    translate([0,0,-0.001])
+                        cylinder(d=2,h=12);
+                }
+            translate([5+147.5,-19.5-2.5,-14.5])
+                difference()
+                {
+                    cylinder(d=6,h=12);
+                    translate([0,0,-0.001])
+                        cylinder(d=2,h=12);
+                }
+            translate([5+147.5,-19.5-52.5,-14.5])
+                difference()
+                {
+                    cylinder(d=6,h=12);
+                    translate([0,0,-0.001])
+                        cylinder(d=2,h=12);
+                }
+            translate([5+2.5,-19.5-52.5,-14.5])
+                difference()
+                {
+                    cylinder(d=6,h=12);
+                    translate([0,0,-0.001])
+                        cylinder(d=2,h=12);
+                }
+        }
+}
+
+module display()
+{
+    translate([0,-55,0])
+    {
+        color("red")
+        {
+            difference()
+            {
+                cube([150,55,1.5]);
+                translate([2.5,2.5,-0.001])
+                    cylinder(d=3,h=1.502);
+                translate([147.5,2.5,-0.001])
+                    cylinder(d=3,h=1.502);
+                translate([147.5,52.5,-0.001])
+                    cylinder(d=3,h=1.502);
+                translate([2.5,52.5,-0.001])
+                    cylinder(d=3,h=1.502);
+            }
+        }
+        color("green")
+        {
+            translate([13,-8,4.5])
+                cube([98,60,1.5]);
+        }
+        color("black")
+        {
+            translate([13.5,1.4,6])
+                cube([97,39.6,10]);
+        }
+        color("blue")
+        {
+            translate([137,25,15])
+                cylinder(d1=15,d2=11,h=15);
+        }
+        color("silver")
+        {
+            translate([0,8,-2])
+                cube([26,27,2]);
+        }
+    }
+}
+rotate([90+atan(25/82.5),0,0])
+translate([0,27.5,0])
+    console();
