@@ -252,6 +252,27 @@ module pen_holder()
     }
 }
 
+module servo_lift_plate()
+{
+            difference()
+            {
+                hull()
+                {
+                    translate([-30,0,0])
+                        cylinder(d=8,h=5);
+                    translate([30,0,0])
+                        cylinder(d=8,h=5);
+                    translate([-25,0,0])
+                        cube([50,7,5]);
+                }
+                translate([-30,0,-0.001])
+                    cylinder(d=3.5,h=5.002);
+                translate([30,0,-0.001])
+                    cylinder(d=3.5,h=5.002);
+            }
+}
+
+
 // Base
 translate([0,0,145-38])
 {
@@ -262,13 +283,6 @@ translate([0,0,145-38])
     translate([10.25,-14.5,30])
     rotate([0,90,0])
         MG995WithSingleHorn(90);
-        // MG995();
-    /*
-    translate([0,-4.3,19+5.5])
-        rotate([0,90,0])
-            translate([-5.9,0,-11.25])
-                MG995();
-    */
 }
 
 // Shaft holder
@@ -296,11 +310,6 @@ translate([0,0,145-38])
         translate([0,-17,6])
             rotate([0,0,180])
                 z_pen_bottom();
-        /*
-        translate([0,-17,20])
-            rotate([180,0,180])
-                z_pen_bottom_holder();
-        */
         
         translate([0,-17,20])
             rotate([180,0,0])
@@ -324,22 +333,7 @@ translate([0,0,145-38])
             cylinder(d=8,h=45);                
         
         translate([0,-17,127])
-            difference()
-            {
-                hull()
-                {
-                    translate([-30,0,0])
-                        cylinder(d=8,h=5);
-                    translate([30,0,0])
-                        cylinder(d=8,h=5);
-                    translate([-25,0,0])
-                        cube([50,7,5]);
-                }
-                translate([-30,0,-0.001])
-                    cylinder(d=3.5,h=5.002);
-                translate([30,0,-0.001])
-                    cylinder(d=3.5,h=5.002);
-            }
+            servo_lift_plate();
 
         translate([10,-11,65])
             rotate([90,0,-90])
@@ -347,6 +341,16 @@ translate([0,0,145-38])
     }
 }
 
+
+// spacer
+/*
+difference()
+{
+    cylinder(d=8,h=45);
+    translate([0,0,-0.001])
+        cylinder(d=3.5,h=45.002);
+}
+*/
 /*
 translate([0,-38.002,-2])
     stabilo();

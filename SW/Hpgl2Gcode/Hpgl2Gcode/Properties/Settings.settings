@@ -1,0 +1,27 @@
+﻿<?xml version='1.0' encoding='utf-8'?>
+<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="Hpgl2Gcode.Properties" GeneratedClassName="Settings">
+  <Profiles />
+  <Settings>
+    <Setting Name="Speed" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">500</Value>
+    </Setting>
+    <Setting Name="HomeAxes" Type="System.String" Scope="Application">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="PenUp" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">G1 Z5 F50</Value>
+    </Setting>
+    <Setting Name="PenDown" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">G1 Z-1 F50</Value>
+    </Setting>
+    <Setting Name="IgnoreVelocity" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">true</Value>
+    </Setting>
+    <Setting Name="VelocityScale" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">40.2</Value>
+    </Setting>
+    <Setting Name="HpglPpmm" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">40.18</Value>
+    </Setting>
+  </Settings>
+</SettingsFile>

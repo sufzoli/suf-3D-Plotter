@@ -14,18 +14,20 @@ use <x_endstop_holder.scad>
 use <PSU.scad>
 // use <tb_lock.scad>
 use <tb_mount.scad>
-use <x_caridge_base.scad>
+use <x_caridge_base_wide.scad>
 use <x_pen.scad>
 use <z_pen_bearing_holder.scad>
 use <microservo_SG90.scad>
 use <stabilo_point_88.scad>
+use <Z Axis/z_base.scad>
+use <Z Axis/tool_plate.scad>
 
 $fn=100;
 plate_x=440;
 plate_y=400;
 
 posY=0; // -175 - 175
-posX = 90; // 90 - 510
+posX = 106; // 90 - 510, 105 - 495
 
 /*
 block_heigth=25;
@@ -215,20 +217,80 @@ translate([80,237.5,xdrive_height-37])
     cube([20,1,100]);
 */
 // moving X carage
-translate([posX,220-rod_displacement-sc_h,lower_rod_height])
-    rotate([-90,0,0])
-        SCxxUU();
-translate([posX,220-rod_displacement-sc_h,upper_rod_height])
-    rotate([-90,0,0])
-        SCxxUU();
+for(i=[-15,15])
+    for(j=[lower_rod_height,upper_rod_height])
+        translate([posX+i,220-rod_displacement-sc_h,j])
+            rotate([-90,0,0])
+                SCxxUU();
 
-// x carage for pen
 translate([posX,195,145])
 {
     rotate([-90,0,0])
     {
         x_caridge_base();
     }
+}
+
+// Z stepper holder
+
+slider_headroom = 10;
+
+translate([posX,189,62])
+{
+        translate([0,0,3])
+            bearing_holder();
+
+        translate([0,0,3])
+            rotate([0,180,0])
+                color("blue")
+                    bearing_seal_up();
+
+        translate([0,0,9])
+            z_base();
+
+        translate([0,0,9])
+            for(i=[-15,15])
+                translate([i,-2.5 - slider_headroom,0])
+                    color("silver")
+                        cylinder(d=5,h=150);
+
+        translate([0,0,-10])
+            for(i=[-35,35])
+                translate([i,-2,0])
+                    color("silver")
+                        cylinder(d=8,h=194);
+
+
+        translate([0,-6,-5])
+            color("silver")
+                cylinder(d=5,h=200);
+
+        translate([20.75,-30,3])
+            rotate ([90,0,180])
+                opto_endstop();
+
+        translate([20.75,-19.5,159])
+            rotate ([-90,0,180])
+                opto_endstop();
+
+        translate([0,0,150])
+            motor_mount();
+        translate([0,0,159])
+            color("blue")
+                bearing_seal_up();
+          
+        translate([0,-33,47])  // 47, 114
+            rotate([-90,0,0])
+                tool_plate();    
+
+}        
+
+
+
+/*
+// x carage for pen
+translate([posX,195,145])
+{
     rotate([90,180,0])
     {
         x_pen_base();
@@ -278,7 +340,7 @@ translate([posX,195,145])
 // pen
 translate([posX,195-38.002,38])
     stabilo();
-
+*/
 // x endstop
 translate([75,234,xdrive_height+30.75])
     rotate([90,90,0])
