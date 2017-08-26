@@ -70,7 +70,7 @@ namespace Hpgl2Gcode.Properties {
         
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("40.2")]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
         public string VelocityScale {
             get {
                 return ((string)(this["VelocityScale"]));
@@ -83,6 +83,15 @@ namespace Hpgl2Gcode.Properties {
         public string HpglPpmm {
             get {
                 return ((string)(this["HpglPpmm"]));
+            }
+        }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string IgnoreSpeed {
+            get {
+                return ((string)(this["IgnoreSpeed"]));
             }
         }
     }

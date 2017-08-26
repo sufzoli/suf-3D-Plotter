@@ -1,4 +1,26 @@
-﻿using System;
+﻿/*
+    HPGL2GCODE - HPGL to GCODE Converter for Marlin/GRBL based pen plotters
+    Version 0.1 alpha
+    Copyright (C) 2017 by SUF
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+    Program.cs - The main code
+
+ */
+ 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -6,7 +28,7 @@ using System.Threading.Tasks;
 using Hpgl2Gcode.Properties;
 using System.Configuration;
 using System.IO;
-using System.Globalization;
+using ExtensionMethodes;
 
 namespace Hpgl2Gcode
 {
@@ -24,35 +46,42 @@ namespace Hpgl2Gcode
 
             Settings settings = new Settings();
             ArgProc arguments = new ArgProc(args, settings);
-
-            double HpglPpmm = double.Parse(arguments["HpglPpmm"], CultureInfo.InvariantCulture.NumberFormat); // Hpgl Points per mm
-            double Speed = double.Parse(arguments["Speed"], CultureInfo.InvariantCulture.NumberFormat);
-            double CurrentX;
-            double CurrentY;
-            double CenterX;
-            double CenterY;
-            double Angle;
-            double Alpha;
-            double X;
-            double Y;
-            double R;
-            double I;
-            double J;
-            string[] HpglParams;
-            bool IsDrawing = false;
-
+             
+            // test
             /*
             Console.WriteLine("Arguments:");
-            for(int i=0;i<arguments.ArgCount;i++)
+            for (int i = 0; i < arguments.ArgCount; i++)
             {
                 Console.WriteLine("[" + i.ToString() + "] " + arguments[i]);
             }
             Console.WriteLine("Switches:");
-            foreach(string switchKey in arguments.SwitchKeys)
+            foreach (string switchKey in arguments.SwitchKeys)
             {
                 Console.WriteLine("[" + switchKey + "] " + arguments[switchKey]);
             }
             */
+            // end test
+
+
+
+            double HpglPpmm = arguments["HpglPpmm"].ToDouble(); // Hpgl Points per mm
+            //double Speed = arguments["Speed"].ToDouble();
+            Cordinate CurrentXY;
+            Cordinate CenterXY = new Cordinate(0, 0); ;
+            double Angle;
+            double Alpha;
+            Cordinate XY = new Cordinate(0,0);
+            double R;
+            Cordinate IJ;
+            string[] HpglParams;
+            bool IsDrawing = false;
+
+            Console.WriteLine("HPGL to GCODE Converter v0.1 alpha - Copyright (C) 2017 by SUF");
+            Console.WriteLine("This program is free software: you can redistribute it and / or modify");
+            Console.WriteLine("it under the terms of the GNU General Public License as published by");
+            Console.WriteLine("the Free Software Foundation, either version 3 of the License, or");
+            Console.WriteLine("any later version.");
+
             if (arguments.ArgCount == 2)
             {
                 InFileName = arguments[0];
@@ -71,9 +100,12 @@ namespace Hpgl2Gcode
                 OutFile.WriteLine("G21");
                 OutFile.WriteLine(arguments["PenUp"]);
                 IsDrawing = false;
+                if(!ArgProc.GetBool(arguments["IgnoreSpeed"]))
+                {
+                    OutFile.WriteLine("G1 F" + arguments["Speed"]);
+                }
                 OutFile.WriteLine("G28 " + arguments["HomeAxes"]);
-                CurrentX = 0;
-                CurrentY = 0;
+                CurrentXY = new Cordinate(0, 0);
                 while (!InFile.EndOfStream)
                 {
                     InLine = InFile.ReadLine();
@@ -88,46 +120,17 @@ namespace Hpgl2Gcode
                                 case "PU":  // Pen Up
                                     OutFile.WriteLine(arguments["PenUp"]);
                                     IsDrawing = false;
-                                    if (HpglCommand.Trim().Length > 2)
-                                    {
-                                        HpglParams = HpglCommand.Substring(2).Trim().Split(',');
-                                        if (HpglParams.Length > 0)
-                                        {
-                                            Y = CurrentY;
-                                            X = double.Parse(HpglParams[0], CultureInfo.InvariantCulture.NumberFormat) / HpglPpmm;
-                                            if (HpglParams.Length > 1)
-                                                Y = double.Parse(HpglParams[1], CultureInfo.InvariantCulture.NumberFormat) / HpglPpmm;
-                                            OutFile.WriteLine("G0 X" + X.ToString(CultureInfo.InvariantCulture.NumberFormat) + " Y" + Y.ToString(CultureInfo.InvariantCulture.NumberFormat) + " F" + Speed.ToString(CultureInfo.InvariantCulture.NumberFormat));
-                                            CurrentX = X;
-                                            CurrentY = Y;
-                                        }
-                                    }
+                                    CurrentXY = DrawPoly(OutFile, HpglPpmm, HpglCommand.Substring(2).Trim(), false);
                                     break;
                                 case "PD": // Pen Down
                                     OutFile.WriteLine(arguments["PenDown"]);
                                     IsDrawing = true;
-                                    if (HpglCommand.Trim().Length > 2)
-                                    {
-                                        HpglParams = HpglCommand.Substring(2).Trim().Split(',');
-                                        if (HpglParams.Length > 0)
-                                        {
-                                            X = CurrentX;
-                                            Y = CurrentY;
-                                            for (int i = 0; i < HpglParams.Length; i += 2)
-                                            {
-                                                X = double.Parse(HpglParams[i], CultureInfo.InvariantCulture.NumberFormat) / HpglPpmm;
-                                                Y = double.Parse(HpglParams[i + 1], CultureInfo.InvariantCulture.NumberFormat) / HpglPpmm;
-                                                OutFile.WriteLine("G1 X" + X.ToString(CultureInfo.InvariantCulture.NumberFormat) + " Y" + Y.ToString(CultureInfo.InvariantCulture.NumberFormat) + " F" + Speed.ToString(CultureInfo.InvariantCulture.NumberFormat));
-                                            }
-                                            CurrentX = X;
-                                            CurrentY = Y;
-                                        }
-                                    }
+                                    CurrentXY = DrawPoly(OutFile, HpglPpmm, HpglCommand.Substring(2).Trim(), true);
                                     break;
                                 case "VS": // Velocity Set
                                     if (!ArgProc.GetBool(arguments["IgnoreVelocity"]))
                                     {
-                                        Speed = double.Parse(HpglCommand.Substring(2), CultureInfo.InstalledUICulture.NumberFormat) * double.Parse(arguments["VelocityScale"], CultureInfo.InstalledUICulture.NumberFormat);
+                                        OutFile.WriteLine("G1 F" + (HpglCommand.Substring(2).ToDouble() * arguments["VelocityScale"].ToDouble()).ToIString());
                                     }
                                     break;
                                 case "IN": // Start
@@ -135,64 +138,47 @@ namespace Hpgl2Gcode
                                 case "SP":
                                     break;
                                 case "PA": // Position Absolute
-                                    X = CurrentX;
-                                    Y = CurrentY;
-                                    if (HpglCommand.Trim().Length > 2)
-                                    {
-                                        HpglParams = HpglCommand.Substring(2).Trim().Split(',');
-                                        if (HpglParams.Length > 0)
-                                            X = double.Parse(HpglParams[0], CultureInfo.InvariantCulture.NumberFormat) / HpglPpmm;
-                                        if (HpglParams.Length > 1)
-                                            Y = double.Parse(HpglParams[1], CultureInfo.InvariantCulture.NumberFormat) / HpglPpmm;
-                                    }
-                                    // if the pen is down draw (G1) if it is up rapid move (G0)
-                                    OutFile.WriteLine((IsDrawing ? "G1" : "G0") + " X" + X.ToString(CultureInfo.InvariantCulture.NumberFormat) + " Y" + Y.ToString(CultureInfo.InvariantCulture.NumberFormat) + " F" + Speed.ToString(CultureInfo.InvariantCulture.NumberFormat));
-                                    CurrentX = X;
-                                    CurrentY = Y;
+                                    XY = CurrentXY;
+                                    CurrentXY = DrawPoly(OutFile, HpglPpmm, HpglCommand.Substring(2).Trim(), IsDrawing);
+                                    CurrentXY = XY;
                                     break;
                                 case "CI":  // Circle
                                     // Parse radius
-                                    R = double.Parse(HpglCommand.Substring(2).Trim(), CultureInfo.InvariantCulture.NumberFormat) / HpglPpmm;
+                                    R = HpglCommand.Substring(2).Trim().ToDouble() / HpglPpmm;
                                     // Move negative X by Radius to arrive to the arc
-                                    OutFile.WriteLine("G0 X" + (CurrentX - R).ToString(CultureInfo.InvariantCulture.NumberFormat) + " F" + Speed.ToString(CultureInfo.InvariantCulture.NumberFormat));
+                                    OutFile.WriteLine("G0 X" + (CurrentXY.X - R).ToIString());
                                     // Pen down - there is no PD command before CI, it assume that you draw the circle
                                     OutFile.WriteLine(arguments["PenDown"]);
                                     IsDrawing = true;
                                     // Draw the circle
-                                    OutFile.WriteLine("G2 I" + R.ToString(CultureInfo.InvariantCulture.NumberFormat));
-                                    CurrentX -= R;
+                                    OutFile.WriteLine("G2 I" + R.ToIString());
+                                    CurrentXY.X -= R;
                                     break;
                                 case "AA": // Arc Absolute
                                     // gather the parameters
                                     HpglParams = HpglCommand.Substring(2).Trim().Split(',');
-                                    CenterX = double.Parse(HpglParams[0], CultureInfo.InvariantCulture.NumberFormat) / HpglPpmm;
-                                    CenterY = double.Parse(HpglParams[1], CultureInfo.InvariantCulture.NumberFormat) / HpglPpmm;
-                                    Angle = double.Parse(HpglParams[2], CultureInfo.InvariantCulture.NumberFormat);
+                                    CenterXY.X = HpglParams[0].ToDouble() / HpglPpmm;
+                                    CenterXY.Y = HpglParams[1].ToDouble() / HpglPpmm;
+                                    Angle = HpglParams[2].ToDouble();
                                     // calculate the relative center point (I,J)
-                                    I = CenterX - CurrentX;
-                                    J = CenterY - CurrentY;
+                                    IJ = CenterXY - CurrentXY;
                                     // calculate the radius (pythagorean theorem)
-                                    R = Math.Sqrt(Math.Pow(I, 2) + Math.Pow(J, 2));
+                                    R = Math.Sqrt(Math.Pow(IJ.X, 2) + Math.Pow(IJ.Y, 2));
                                     // calculate the angle between start point and the X axis
-                                    Alpha = Math.Asin((CurrentY - CenterY) / R) * 180 / Math.PI;
+                                    Alpha = DegMath.Asin((CurrentXY.Y - CenterXY.Y) / R);
                                     // extend the -90 to 90 degree angle to -270 to 90
-                                    if (CurrentX < CenterX)
+                                    if (CurrentXY.X < CenterXY.X)
                                     {
                                         Alpha = -180 - Alpha;
                                     }
                                     // calculate the arc end absolute cordinates
-                                    X = CenterX + R * Math.Cos((Angle + Alpha) * Math.PI / 180);
-                                    Y = CenterY + R * Math.Sin((Angle + Alpha) * Math.PI / 180);
+                                    XY.X = CenterXY.X + R * DegMath.Cos(Angle + Alpha);
+                                    XY.Y = CenterXY.Y + R * DegMath.Sin(Angle + Alpha);
                                     // generate the gcode
                                     // the positive angles moves CCV, the negative angles move CV
-                                    OutFile.WriteLine((Angle > 0 ? "G3 X" : "G2 X") + X.ToString(CultureInfo.InvariantCulture.NumberFormat) +
-                                                        " Y" + Y.ToString(CultureInfo.InvariantCulture.NumberFormat) +
-                                                        " I" + I.ToString(CultureInfo.InvariantCulture.NumberFormat) +
-                                                        " J" + J.ToString(CultureInfo.InvariantCulture.NumberFormat)
-                                        );
+                                    OutFile.WriteLine((Angle > 0 ? "G3 X" : "G2 X") + XY.XString + " Y" + XY.YString + " I" + IJ.XString + " J" + IJ.YString);
                                     // Save the cordinates
-                                    CurrentX = X;
-                                    CurrentY = Y;
+                                    CurrentXY = XY;
                                     break;
                                 default:
                                     // Unknown or unimplemented command arrived
@@ -219,24 +205,24 @@ namespace Hpgl2Gcode
                 }
             }
         }
-        public static Cordinate DrawPoly(StreamWriter OutFile, double HpglPpmm, double Speed, string data, bool IsRapid)
+        public static Cordinate DrawPoly(StreamWriter OutFile, double HpglPpmm, string data, bool IsRapid)
         {
             string[] Cordinates;
-            double X=0, Y=0;
-            if (data.Trim().Length > 2)
+            Cordinate XY = new Cordinate(0,0);
+            if (data.Trim().Length > 0)
             {
-                Cordinates = data.Substring(2).Trim().Split(',');
+                Cordinates = data.Trim().Split(',');
                 if (Cordinates.Length > 0)
                 {
                     for (int i = 0; i < Cordinates.Length; i += 2)
                     {
-                        X = double.Parse(Cordinates[i], CultureInfo.InvariantCulture.NumberFormat) / HpglPpmm;
-                        Y = double.Parse(Cordinates[i + 1], CultureInfo.InvariantCulture.NumberFormat) / HpglPpmm;
-                        OutFile.WriteLine((IsRapid ? "G1" : "G0") + " X" + X.ToString(CultureInfo.InvariantCulture.NumberFormat) + " Y" + Y.ToString(CultureInfo.InvariantCulture.NumberFormat) + " F" + Speed.ToString(CultureInfo.InvariantCulture.NumberFormat));
+                        XY.X = Cordinates[i].ToDouble() / HpglPpmm;
+                        XY.Y = Cordinates[i + 1].ToDouble() / HpglPpmm;
+                        OutFile.WriteLine((IsRapid ? "G1" : "G0") + " X" + XY.XString + " Y" + XY.YString);
                     }
                 }
             }
-            return new Cordinate(X,Y);
+            return XY;
         }
     }
     public class Cordinate
@@ -249,5 +235,35 @@ namespace Hpgl2Gcode
         }
         public double X;
         public double Y;
+        public static Cordinate operator +(Cordinate a, Cordinate b)
+        {
+            return new Cordinate(a.X + b.X, a.Y + b.Y);
+        }
+        public static Cordinate operator -(Cordinate a, Cordinate b)
+        {
+            return new Cordinate(a.X - b.X, a.Y - b.Y);
+        }
+        public string XString
+        {
+            get
+            {
+                return X.ToIString();
+            }
+            set
+            {
+                X = value.ToDouble();
+            }
+        }
+        public string YString
+        {
+            get
+            {
+                return Y.ToIString();
+            }
+            set
+            {
+                Y = value.ToDouble();
+            }
+        }
     }
 }

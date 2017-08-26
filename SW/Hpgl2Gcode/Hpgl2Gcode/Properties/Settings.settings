@@ -18,10 +18,13 @@
       <Value Profile="(Default)">true</Value>
     </Setting>
     <Setting Name="VelocityScale" Type="System.String" Scope="Application">
-      <Value Profile="(Default)">40.2</Value>
+      <Value Profile="(Default)" />
     </Setting>
     <Setting Name="HpglPpmm" Type="System.String" Scope="Application">
       <Value Profile="(Default)">40.18</Value>
+    </Setting>
+    <Setting Name="IgnoreSpeed" Type="System.String" Scope="Application">
+      <Value Profile="(Default)" />
     </Setting>
   </Settings>
 </SettingsFile>
